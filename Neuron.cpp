@@ -13,8 +13,8 @@ Neuron::Neuron(const std::vector<Neuron*>& inputs, bool first_line) : value(0), 
 
 	srand(time(0));
 	if (!first_line)
-		for (Neuron* el : inputs) {
-			this->inputs.insert({ el, (rand() % 100 - 50) / 1000.0 });
+		for (int i = 0; i < inputs.size(); ++i) {
+			this->inputs.push_back({ inputs[i], (rand() % 100 - 50) / 1000.0});
 		}
 }
 
@@ -54,6 +54,35 @@ void Neuron::setError(float err)
 float Neuron::getError() const
 {
 	return this->error;
+}
+
+bool Neuron::is_first_line() const
+{
+	return first_line;
+}
+
+std::vector<float> Neuron::getWeights() const
+{
+	using namespace std;
+	
+	vector<float> weights;
+
+	if (this->first_line) return weights;
+	
+	for (int i = 0; i < inputs.size(); ++i) {
+		weights.push_back(inputs[i].second);
+	}
+		
+	return weights;
+}
+
+void Neuron::setWeights(const std::vector<float>& weights)
+{
+	if (this->first_line) return;
+	
+	for (int i = 0; i < inputs.size(); ++i) {
+		inputs[i].second = weights[i];
+	}
 }
 
 void Neuron::learn(float k)

@@ -6,7 +6,7 @@
 
 class Neuron
 {
-	std::map<Neuron*, float> inputs;  // neurons and weights of their connections
+	std::vector<std::pair<Neuron*, float>> inputs;  // neurons and weights of their connections
 
 	float value;
 	float error;
@@ -30,6 +30,12 @@ public:
 	void setError(float err);
 	
 	float getError() const;
+
+	bool is_first_line() const;
+
+	std::vector<float> getWeights() const;
+
+	void setWeights(const std::vector<float>& weights);
 	
 	void learn(float k);  // k - learning coefficient 
 

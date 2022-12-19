@@ -10,6 +10,8 @@ class NeuralNetwork
 
 	std::vector<std::vector<float>> sample;
 
+	bool saved;
+
 public:
 
 	~NeuralNetwork();
@@ -21,6 +23,8 @@ public:
 	void learn(float k, float err);
 
 	void save(const char* path);
+
+	bool is_save() const;
 
 	void loadFromFile(const char* path);
 
