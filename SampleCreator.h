@@ -17,8 +17,6 @@ class SampleCreator
 
 	std::vector<Pixel> image;
 
-	bool created;
-
 	int sizeX, sizeY;
 	int nAnsw;
 
@@ -30,19 +28,29 @@ public:
 
 	void createDataSetSample(float x, float y, bool found);  
 
-	std::vector<std::vector<float>>& getDataSet();
+	std::vector<std::vector<float>> getDataSet();
 
 	void save(const char* path);
 
 	void loadImage(const char* path);
 
-	std::pair<int, int> getImgSize() const;
-
-	bool is_created() const;
-
 	void printPart() const;
 
 	void getRandomPart();
+
+	void shuffleDataSet();
+
+private:
+
+	void dataAugmenter(const std::vector<float>& sample);  // makes extra samples from existing one
+
+	void addSample(const std::vector<float>& sample);
+
+	std::vector<float> rotateSampleM(const std::vector<float>& sample);  // rotate samples 'matrix' on 90 degrees; !only for square samples (sizeX = sizeY)! 
+
+	std::vector<float> inverseSampleM(const std::vector<float>& sample);  // inverse samples grey channel 
+
+	std::vector<float> reflectSampleM(const std::vector<float>& sample);  // reflect samples 'matrix'
 
 };
 
