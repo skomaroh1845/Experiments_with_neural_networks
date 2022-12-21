@@ -234,7 +234,6 @@ std::vector<float> NeuralNetwork::getAnswer(int n)
 	}
 
 	// forward signal
-	// forward signal
 	for (vector<Neuron*> L : config) {
 		for (Neuron* neur : L)
 			neur->computeValue();
@@ -246,6 +245,15 @@ std::vector<float> NeuralNetwork::getAnswer(int n)
 		answ.push_back(neur->getValue());
 	}
 	return answ;
+}
+
+void NeuralNetwork::setSample(const std::vector<std::vector<float>>& sample)
+{
+	for (int i = 0; i < sample.size(); ++i) {
+		for (int j = 0; j < sample[i].size(); ++j) {
+			this->sample[i][j] = sample[i][j];
+		}
+	}
 }
 
 void NeuralNetwork::clear()

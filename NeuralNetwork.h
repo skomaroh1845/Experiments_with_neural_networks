@@ -30,6 +30,8 @@ public:
 
 	std::vector<float> getAnswer(int n);
 
+	void setSample(const std::vector<std::vector<float>>& sample);
+
 private:
 
 	void clear(); 

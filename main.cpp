@@ -3,7 +3,7 @@
 
 #include "NeuralNetwork.h"
 
-int main() {
+int main(int argc, char** argv) {
 
 	using namespace std;
 
@@ -13,10 +13,13 @@ int main() {
 	bool flag;
 	cin >> flag;
 
-	// learning samples  
-	nn.loadSample("sample.txt");
-
 	if (flag) {	// creation
+				
+		cout << "Input data set file name: ";
+		string path;
+		cin >> path;
+		nn.loadSample(path.c_str());
+		
 		// init
 		int layers[4] = { 10, 5, 4, 2 };
 		nn.init(4, layers);
@@ -33,9 +36,15 @@ int main() {
 	}
 
 	// testing
+	cout << "Testing." << endl;
+	cout << "Input testing data set file name: ";
+	string path;
+	cin >> path;
+	nn.loadSample(path.c_str());
+
 	while (true)
 	{
-		cout << "Enter number of sample for test learing quality (0 to 15; -1 for exit): ";
+		cout << "Enter number of sample for test learing quality (-1 for exit): ";
 		int n;
 		cin >> n;
 		if (n < 0) break;
@@ -49,12 +58,13 @@ int main() {
 		if (ans[0] > 0.6 && ans[1] > 0.6) cout << "both lines" << endl << endl;
 		if (ans[0] < 0.4 && ans[1] < 0.4) cout << "no lines" << endl << endl;
 	}
-
+	
+	// saving
 	cout << "Do you want to save this network? ( 1/0 )" << endl;;
 	cin >> flag;
 	if (flag)
 	{
-		// saving
+		
 		cout << "Saving. Input file name: ";
 		string path;
 		cin >> path;
@@ -66,7 +76,6 @@ int main() {
 			nn.save(path.c_str());
 		}
 	}
-
 	return 0;
 }
 
