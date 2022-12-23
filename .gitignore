@@ -37,3 +37,5 @@
 *.filters
 *.user
 /Debug
+/x64/Release
+/Release

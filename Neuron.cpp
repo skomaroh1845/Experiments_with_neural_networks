@@ -3,6 +3,35 @@
 #include <algorithm>
 #include <iostream>
 
+
+// help func
+float f(float x) {  // activation func
+	/*if (x < 0) {
+		return 0.01 * x;
+	}
+	else if (x > 1) {
+		return 1 + 0.01 * (x - 1);
+	}
+	else {
+		return x;
+	} */
+	return 1 / (1 + exp(-1 * x));
+}
+
+float df(float x) {  // diff of activ. func
+	/*if (x < 0) {
+		return 0.01;
+	}
+	else if (x > 1) {
+		return 0.01;
+	}
+	else {
+		return 1;
+	} */
+	return x * (1 - x);
+}
+
+
 Neuron::Neuron() : Neuron( std::vector<Neuron*>(1, nullptr), true )
 {
 }
@@ -35,7 +64,7 @@ void Neuron::computeValue()
 	for (const auto& el : this->inputs) {
 		sum += el.second * el.first->getValue();
 	}
-	this->value = 1 / ( 1 + exp( -1 * sum ) );
+	this->value = f(sum);
 }
 
 void Neuron::computeError()
@@ -89,7 +118,7 @@ void Neuron::learn(float k)
 {
 	if (first_line) return;
 	for (auto& el : this->inputs) {
-		el.second += k * this->error * el.first->getValue() * this->value * (1 - this->value);
+		el.second += k * this->error * el.first->getValue() * df(this->value);
 				// learning koef * error * input value * diff 
 	}
 	this->error = 0;

@@ -95,9 +95,54 @@ void SampleCreator::createDataSetSample(float x, float y, bool found)
 	getRandomPart();
 }
 
-std::vector<std::vector<float>> SampleCreator::getDataSet()
+std::vector<std::vector<float>> SampleCreator::getDataSet() const
 {
 	return this->dataSet;
+}
+
+std::vector<Pixel> SampleCreator::getImage() const
+{
+	return this->image;
+}
+
+std::vector<Pixel> SampleCreator::getRandImagePart()
+{
+	using namespace std;
+	getRandomPart();
+
+	vector<Pixel> imgPart;
+
+	// write neccessary pixels
+	for (int i = 0; i < sizeY; ++i) {
+		for (int j = 0; j < sizeX; ++j)
+		{
+			imgPart.push_back(image[partStartPoint + j + i * img_w]);
+		}
+	}
+
+	return imgPart;
+}
+
+std::vector<Pixel> SampleCreator::getImagePart(int n)
+{
+	using namespace std;
+
+	vector<Pixel> imgPart;
+
+	// write neccessary pixels
+	for (int i = 0; i < sizeY; ++i) {
+		for (int j = 0; j < sizeX; ++j)
+		{
+			imgPart.push_back(image[n + j + i * img_w]);
+		}
+	}
+
+	return imgPart;
+}
+
+std::pair<int, int> SampleCreator::getImgSize() const
+{
+	return std::pair<int, int>(img_w, img_h);
 }
 
 void SampleCreator::save(const char* path)

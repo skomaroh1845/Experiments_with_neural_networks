@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <Windows.h>
 
 
 NeuralNetwork::~NeuralNetwork()
@@ -50,28 +51,32 @@ void NeuralNetwork::loadSample(const char* path)
 
 	sample.clear();
 
-	
 	ifstream f(path);
 	if (f.is_open()) {
 
-		int k = 0;
-		
-		while (true) {
-			if (f.eof()) break;
-			
-			sample.push_back(vector<float>());
+		int nSamples;
+		f >> nSamples;
+		int sizeX, sizeY;
+		f >> sizeX;
+		f >> sizeY;
+		f >> numAnswers;
 
-			for (int i = 0; i < 11; ++i)
-			{
-				float a;
-				f >> a;
-				sample[k].push_back(a);
-			}
-			
-			++k;
+		for (int i = 0; i < nSamples; ++i) {
+			sample.push_back(vector<float>());
+			sample[i].resize(sizeX * sizeY + numAnswers);
 		}
 
+		for (int i = 0; i < nSamples; ++i) {
+			if (f.eof()) break;
+
+			for (int j = 0; j < sizeX * sizeY + numAnswers; ++j)
+			{
+				f >> sample[i][j];
+			}
+		}
 		f.close();
+		cout << "Data set loaded successfully. It has " << nSamples << " samples." << endl;
+		cout << "Recomended min error value for learning: " << nSamples * 0.1 * numAnswers << endl;
 	}
 	else {
 		cout << "File open error" << endl;
@@ -86,16 +91,32 @@ void NeuralNetwork::learn(float k, float err)
 	float error = err + 1;
 	int iter = 0;
 	saved = false;
+	
+	if (config[0].size() != sample[0].size() - numAnswers) {
+		cout << "Wrong data set! Amount of inputs neurons != sample size." << endl;
+		exit(-1);
+	}
 
 	while (error > err)
 	{
 		error = 0;
 		++iter;
+		if (GetAsyncKeyState(' ')) {
+			cout << "Learning was paused. Complite or continue? (1)/(0)." << endl;
+			bool exit_flag;
+			cin >> exit_flag;
+			if (exit_flag)
+			{
+				cout << "Learning complited." << endl;
+				return;
+			}
+		}
 
 		for (int i = 0; i < sample.size(); ++i)
 		{
 			// load sample to input neurons
-			for (int j = 0; j < 9; ++j) {
+			
+			for (int j = 0; j < config[0].size(); ++j) {
 				config[0][j]->setValue(sample[i][j]);
 			}
 
@@ -106,13 +127,25 @@ void NeuralNetwork::learn(float k, float err)
 			}
 
 			// error processing
-			float err1 = sample[i][sample[i].size() - 2] - config[config.size() - 1][0]->getValue();
-			float err2 = sample[i][sample[i].size() - 1] - config[config.size() - 1][1]->getValue();
-			error += abs(err1) + abs(err2);
 			
-			config[config.size() - 1][0]->setError(err1);
-			config[config.size() - 1][1]->setError(err2);
-			
+			//--- only for this data set ----
+			if (sample[i][sample[i].size() - 1] == 1) {
+				config[config.size() - 1][0]->setError(0);  // skip errors if last answer = 1
+				config[config.size() - 1][1]->setError(0);
+				config[config.size() - 1][2]->setError(0);
+				float err = sample[i][sample[i].size() - 1] - config[config.size() - 1][3]->getValue();
+				error += abs(err);
+				config[config.size() - 1][3]->setError(err);
+			}
+			//-------------------------------
+			else {
+				for (int j = 0; j < numAnswers; ++j) {
+					float err = sample[i][sample[i].size() - numAnswers + j] - config[config.size() - 1][j]->getValue();
+					error += abs(err);
+					config[config.size() - 1][j]->setError(err);
+				}
+			}
+
 			for (int i = config.size() - 1; i > 0; --i) {
 				for (Neuron* neur : config[i])
 					neur->computeError();
@@ -216,20 +249,9 @@ void NeuralNetwork::loadFromFile(const char* path)
 std::vector<float> NeuralNetwork::getAnswer(int n)
 {
 	using namespace std;
-	
-	cout << endl;
-	cout << "Sample " << n << endl;
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 3; ++j) {
-			cout << sample[n][j + i * 3] << " ";
-		}
-		cout << endl;
-	}
-	cout << endl;
-	cout << "Gained answer: ";
 
 	// load sample to input neurons
-	for (int j = 0; j < 9; ++j) {
+	for (int j = 0; j < config[0].size(); ++j) {
 		config[0][j]->setValue(sample[n][j]);
 	}
 
@@ -247,13 +269,51 @@ std::vector<float> NeuralNetwork::getAnswer(int n)
 	return answ;
 }
 
-void NeuralNetwork::setSample(const std::vector<std::vector<float>>& sample)
+std::vector<float> NeuralNetwork::getAnswer(std::vector<float> sample)
 {
+	using namespace std;
+
+	// load sample to input neurons
+	for (int j = 0; j < config[0].size(); ++j) {
+		config[0][j]->setValue(sample[j]);
+	}
+
+	// forward signal
+	for (vector<Neuron*> L : config) {
+		for (Neuron* neur : L)
+			neur->computeValue();
+	}
+
+	// answer
+	vector<float> answ;
+	for (Neuron* neur : config[config.size() - 1]) {
+		answ.push_back(neur->getValue());
+	}
+	return answ;
+}
+
+void NeuralNetwork::setSampleSet(const std::vector<std::vector<float>>& sample)
+{
+	using namespace std;
+
+	this->sample.clear();
+	
 	for (int i = 0; i < sample.size(); ++i) {
+		this->sample.push_back(vector<float>());
 		for (int j = 0; j < sample[i].size(); ++j) {
-			this->sample[i][j] = sample[i][j];
+			this->sample[i].push_back(sample[i][j]);
 		}
 	}
+}
+
+int NeuralNetwork::getInConfig() const
+{
+	return config[0].size();
+}
+
+int NeuralNetwork::getOutConfig() const
+{
+	return numAnswers;
 }
 
 void NeuralNetwork::clear()

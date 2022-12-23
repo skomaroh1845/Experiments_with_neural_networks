@@ -12,6 +12,8 @@ class NeuralNetwork
 
 	bool saved;
 
+	int numAnswers;
+
 public:
 
 	~NeuralNetwork();
@@ -30,7 +32,13 @@ public:
 
 	std::vector<float> getAnswer(int n);
 
-	void setSample(const std::vector<std::vector<float>>& sample);
+	std::vector<float> getAnswer(std::vector<float> sample);
+
+	void setSampleSet(const std::vector<std::vector<float>>& sample);
+
+	int getInConfig() const;
+
+	int getOutConfig() const;
 
 private:
 

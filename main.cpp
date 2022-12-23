@@ -15,17 +15,31 @@ int main(int argc, char** argv) {
 
 	if (flag) {	// creation
 				
+		// init
+		cout << "Input neural network configuration." << endl;
+		cout << "Number of layers: ";
+		int n;
+		cin >> n;
+		int* layers = new int[n];
+		for (int i = 0; i < n; ++i) {
+			cout << "Amount of neurons in " << i << " layer: ";
+			cin >> layers[i];
+		}
+		nn.init(n, layers);
+		cout << "Network was successfully initialized." << endl;
+		
 		cout << "Input data set file name: ";
 		string path;
 		cin >> path;
 		nn.loadSample(path.c_str());
-		
-		// init
-		int layers[4] = { 10, 5, 4, 2 };
-		nn.init(4, layers);
 
 		// learning
-		nn.learn(0.1, 0.5);
+		cout << "Input learning settings: \nCoefficient: ";
+		float k; cin >> k;
+		cout << "Min error for learn ending: ";
+		float err; cin >> err;
+		nn.learn(k, err);
+		delete[] layers;
 	}
 	else {	
 		// loading
@@ -36,7 +50,7 @@ int main(int argc, char** argv) {
 	}
 
 	// testing
-	cout << "Testing." << endl;
+	/* cout << "Testing." << endl;
 	cout << "Input testing data set file name: ";
 	string path;
 	cin >> path;
@@ -53,11 +67,7 @@ int main(int argc, char** argv) {
 		vector<float> ans(nn.getAnswer(n));
 
 		// interpritation
-		if (ans[0] > 0.6 && ans[1] < 0.4) cout << "horizontal line" << endl << endl;
-		if (ans[0] < 0.4 && ans[1] > 0.6) cout << "vertical line" << endl << endl;
-		if (ans[0] > 0.6 && ans[1] > 0.6) cout << "both lines" << endl << endl;
-		if (ans[0] < 0.4 && ans[1] < 0.4) cout << "no lines" << endl << endl;
-	}
+	} */
 	
 	// saving
 	cout << "Do you want to save this network? ( 1/0 )" << endl;;

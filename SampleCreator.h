@@ -3,13 +3,13 @@
 #include <vector>
 
 
-class SampleCreator
-{
-	struct Pixel {
+struct Pixel {
 		float x, y;
 		float grey;
 	};
-	
+
+class SampleCreator
+{	
 	int img_w;
 	int img_h;
 
@@ -28,7 +28,15 @@ public:
 
 	void createDataSetSample(float x, float y, bool found);  
 
-	std::vector<std::vector<float>> getDataSet();
+	std::vector<std::vector<float>> getDataSet() const;
+
+	std::vector<Pixel> getImage() const;
+
+	std::vector<Pixel> getRandImagePart();
+
+	std::vector<Pixel> getImagePart(int n);
+
+	std::pair<int, int> getImgSize() const;
 
 	void save(const char* path);
 
