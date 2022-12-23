@@ -18,7 +18,9 @@ there will just shift neuron in the layer and such network won't work)
 After testing the pilot code I decided to create a neural network that redraws images via lines (I saw it on youtube). So construction is the following: 49 input neurons, 30 internal, and 4 output. The input neurons get a 7x7 piece of a picture and the 4 output neurons must indicate the line direction of this image element. But there are some difficulties with output neurons because the first 3 are used to calculate the angle and the last one is for criteria of existing the direction. After all, if these 49 pixels have the same color or don't have distinguished lines there is no direction (such a scheme with 4 output neurons was taken from youtube, but unfortunately I didn't achieve special success with teaching this "artificially intelligent" (look below)). 
 
 I started by creating SampleCreator.h to be able to make big (several thousand samples) data set. I annotated data by my hand, but only around 500 samples, other samples were generated automatically (I coded a primitive function that augments data by making extra 15 samples from one via turning, reversing pixels, and reflecting by vertical axis). 
+
 Than the data set was created I learn this network, but not almost successfully - overall absolute error reduce only twice after 50 thousand learning loops. Because my roughly estimated of overall error was not much lower I decided to finish learning.
+
 Next, I did a mainPA - program interpreter for this neural network. It was made in haste so it has some crutches and I decided to not bring it to a happy end because optimization and correction of its working require refactoring the architecture of all this "library" and it is irrational by time (I just continue my experiments in python there are a lot of specialized packages for ML). It was my first neural network experience and even though this program doesn't work as well as wanted I'm glad that it worked at least somehow.
 
 I think the main reasons for my failure are the following: a not quality learning data set, unoptimal network architecture, and not suitable activation function into neurons.
@@ -34,4 +36,3 @@ There are some examples of work of my masterpiece (the result of the program wor
 ![image_2022-12-24_00-20-28](https://user-images.githubusercontent.com/61201241/209396878-06726b41-0453-4613-88e6-736efee454bc.png)
 
 
-![image_2022-12-24_00-21-32](https://user-images.githubusercontent.com/61201241/209396870-74d33837-329c-42a0-bfe2-4e33aa873cb0.png)
